@@ -4,7 +4,7 @@ from flask_cors import CORS
 from blockchain import Blockchain
 
 app = Flask(__name__)
-CORS(app) # Allow React to communicate
+CORS(app)
 
 neuro_chain = Blockchain()
 
@@ -30,7 +30,7 @@ def mine():
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
     values = request.get_json()
-    required = ['author', 'model_name', 'file_data'] # We accept file content or simulation
+    required = ['author', 'model_name', 'file_data'] 
     if not all(k in values for k in required):
         return 'Missing values', 400
 
