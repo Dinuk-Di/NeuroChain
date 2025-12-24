@@ -5,7 +5,7 @@ services:
     build: ./backend
     container_name: neurochain-backend
     ports:
-      - "5000:5000"
+      - "5600:5600"
     volumes:
       - ./backend:/app
     environment:

@@ -44,7 +44,7 @@ function App() {
   // Fetch Blockchain Data
   const fetchChain = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/chain');
+      const res = await axios.get('http://localhost:5600/chain');
       setChain(res.data.chain);
     } catch (err) {
       console.error("Error connecting to backend", err);
@@ -65,11 +65,11 @@ function App() {
     e.preventDefault();
     try {
       // 1. Submit Transaction
-      await axios.post('http://localhost:5000/transactions/new', formData);
+      await axios.post('http://localhost:5600/transactions/new', formData);
       setStatus('Model submitted! Mining block...');
       
       // 2. Mine the Block (Automated for demo)
-      await axios.get('http://localhost:5000/mine');
+      await axios.get('http://localhost:5600/mine');
       setStatus('Block Mined! Chain updated.');
       
       fetchChain(); // Refresh UI
