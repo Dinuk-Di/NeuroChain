@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: neurochain-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_ENV=development
+
+  frontend:
+    build: ./frontend
+    container_name: neurochain-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Prevent host node_modules from overriding container
+    stdin_open: true      # Required for React to run interactively in Docker
+    tty: true             # Required for React to run interactively in Docker
+    depends_on:
+      - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Fixes hot-reload issues on some Windows machines
