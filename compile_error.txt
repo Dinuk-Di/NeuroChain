@@ -1,0 +1,12 @@
+
+WARNING: You are using Node.js 23.10.0 which is not supported by Hardhat.
+Please upgrade to 22.10.0 or a later LTS version (even major version number)
+
+Hardhat only supports ESM projects.
+
+Please make sure you have `"type": "module"` in your package.json.
+
+You can set it automatically by running:
+
+npm pkg set type="module"
+

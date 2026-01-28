@@ -59,26 +59,6 @@ def corrupt():
         return jsonify({"message": "Block 1 has been tampered with!"}), 200
     return "Not enough blocks to corrupt", 400
 
-# @app.route('/verify', methods=['POST'])
-# def verify_model():
-#     values = request.get_json()
-#     if 'file_data' not in values:
-#         return 'Missing file data', 400
-
-#     # Hash the provided file data to check against the ledger
-#     target_hash = hashlib.sha256(values['file_data'].encode()).hexdigest()
-    
-#     for block in neuro_chain.chain:
-#         for tx in block['transactions']:
-#             if tx['model_hash'] == target_hash:
-#                 return jsonify({
-#                     'status': 'Verified',
-#                     'message': 'Model IP found in ledger',
-#                     'details': tx
-#                 }), 200
-
-#     return jsonify({'status': 'Not Found', 'message': 'No matching model hash in registry'}), 404
-
 @app.route('/verify', methods=['POST'])
 def verify():
     values = request.get_json()

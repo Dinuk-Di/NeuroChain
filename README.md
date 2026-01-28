@@ -1,100 +1,133 @@
-# NeuroChain 🧠⛓️
 
-**NeuroChain** is a blockchain-based system designed for the secure registration and provenance tracking of AI models. It utilizes a custom repository blockchain implementation to verify the integrity of AI models by hashing their content and storing the records in an immutable ledger.
+NeuroChain 🧠⛓️
 
-## 🚀 Features
+### **Decentralized AI Model Provenance & Integrity**
 
-- **Blockchain Core**: Custom Python implementation of a blockchain with Proof-of-Work (PoW) consensus.
-- **Model Registration**: Securely register AI models by storing their cryptographic hash (SHA-256), author, and model name.
-- **Tamper-Proof Ledger**: Ensures that registered models cannot be altered without invalidating the chain.
-- **Modern UI**: A React-based frontend to interact with the blockchain, view the chain, and register new models.
-- **Dockerized**: Fully containerized setup for easy deployment using Docker Compose.
+**NeuroChain** is a Web3-powered ecosystem designed to solve the "black box" problem of AI provenance. By leveraging the **Ethereum** blockchain, NeuroChain provides an immutable ledger for registering AI models, verifying their cryptographic integrity (SHA-256), and ensuring that authorship is cryptographically signed and verifiable.
+
+---
+
+## 🏗️ The Architecture
+
+NeuroChain moves away from simulated ledgers to a real-world **DApp (Decentralized Application)** architecture.
+
+* **Smart Contract** : Written in Solidity, deployed via Hardhat. It handles model registry and collision prevention.
+* **Provider** : Ethers.js connects the browser to the Ethereum network.
+* **Signer** : MetaMask handles the private keys and transaction authorization.
+* **Integrity** : SHA-256 hashing ensures that even a single bit change in the AI model file results in a failed verification.
+
+---
 
 ## 🛠️ Tech Stack
 
-### Backend
+| **Layer**        | **Technology**  |
+| ---------------------- | --------------------- |
+| **Blockchain**   | Solidity, Hardhat     |
+| **Frontend**     | React.js, TailwindCSS |
+| **Web3 Library** | Ethers.js (v6)        |
+| **Wallet**       | MetaMask              |
+| **Environment**  | Node.js, Dotenv       |
 
-- **Language**: Python 3.9+
-- **Framework**: Flask
-- **Cryptography**: `hashlib` for SHA-256 hashing
-- **Networking**: REST API for node interaction
+---
 
-### Frontend
+## 🚀 Getting Started
 
-- **Framework**: React.js
-- **Styling**: TailwindCSS
-- **Icons**: Lucide React
-- **HTTP Client**: Axios
+### 1. Prerequisites
 
-### Infrastructure
+* [Node.js](https://nodejs.org/) (v18+)
+* [MetaMask Extension](https://metamask.io/) installed in your browser.
 
-- **Containerization**: Docker & Docker Compose
+### 2. Installation
 
-## 📦 Installation & Setup
+Clone the repository and install dependencies:
 
-### Prerequisites
+**Bash**
 
-- [Docker](https://www.docker.com/products/docker-desktop) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine.
+```
+git clone <your-repo-url>
+cd NeuroChain
+npm install
+```
 
-### Steps
+### 3. Spin up Local Blockchain
 
-1. **Clone the repository**
+Start the Hardhat node to simulate the Ethereum network locally. This will provide you with 20 test accounts.
 
-   ```bash
-   git clone <repository-url>
-   cd NeuroChain
-   ```
+**Bash**
 
-2. **Start the application**
-   Run the following command to build and start the services:
+```
+npx hardhat node
+```
 
-   ```bash
-   docker-compose up --build
-   ```
+### 4. Deploy Smart Contract
 
-3. **Access the Application**
-   - **Frontend**: Open `http://localhost:3000` in your browser.
-   - **Backend API**: Accessible at `http://localhost:5600`.
+In a new terminal window, deploy the contract to your local network:
 
-## 🔌 API Endpoints
+**Bash**
 
-The backend provides the following RESTful endpoints:
+```
+npx hardhat run scripts/deploy.js --network localhost
+```
 
-- **`GET /mine`**
+> **Note** : Copy the deployed contract address from the terminal and paste it into your `frontend/src/config.js` file.
 
-  - Triggers the mining process to create a new block and confirm pending transactions.
+---
 
-- **`POST /transactions/new`**
+## 🔌 Smart Contract Logic
 
-  - Registers a new AI model.
-  - **Body**:
-    ```json
-    {
-      "author": "Author Name",
-      "model_name": "Model v1.0",
-      "file_data": "raw_file_content_string"
-    }
-    ```
+The core logic resides in `NeuroChain.sol`. It ensures that:
 
-- **`GET /chain`**
-  - Returns the full blockchain data.
+1. **Uniqueness** : A model's SHA-256 hash cannot be registered twice.
+2. **Authorship** : The `msg.sender` (wallet address) is permanently linked to the registration event.
+3. **Timestamping** : Uses the block's timestamp for verified "Proof of Existence."
+
+**Solidity**
+
+```
+function registerModel(string memory _name, string memory _author, string memory _modelHash) public {
+    require(!hashExists[_modelHash], "Model already registered!");
+    // ... logic to store model
+}
+```
+
+---
+
+## 💻 Running the Demo
+
+1. **Connect MetaMask** : Switch your MetaMask network to `Localhost 8545` (Chain ID `31337`).
+2. **Import Account** : Import one of the private keys generated by `npx hardhat node` into MetaMask.
+3. **Start Frontend** :
+   **Bash**
+
+```
+   cd frontend
+   npm start
+```
+
+1. **Register a Model** : Upload an AI model file (e.g., `.onnx`, `.pth`). The frontend will compute the SHA-256 hash locally, and MetaMask will pop up to sign the transaction to write this data to the blockchain.
+
+---
 
 ## 📂 Project Structure
 
+**Plaintext**
+
 ```
 NeuroChain/
-├── backend/               # Flask Backend
-│   ├── app.py             # API Entry point
-│   ├── blockchain.py      # Core Blockchain Logic
-│   └── Dockerfile         # Backend Docker config
-├── frontend/              # React Frontend
-│   ├── src/               # Source code
-│   ├── public/            # Static assets
-│   └── Dockerfile         # Frontend Docker config
-├── docker-compose.yml     # Service Orchestration
-└── README.md              # Project Documentation
+├── contracts/           # Solidity Smart Contracts
+├── scripts/             # Deployment scripts
+├── test/                # Hardhat unit tests
+├── frontend/            # React Application
+│   ├── src/
+│   │   ├── hooks/       # Web3 connection hooks
+│   │   ├── components/  # Registration & Chain Viewer
+│   │   └── abi/         # NeuroChain.json (Contract ABI)
+├── hardhat.config.js    # Hardhat configuration
+└── README.md
 ```
+
+---
 
 ## 🛡️ License
 
-This project is open-source and available under the [MIT License](LICENSE).
+Distributed under the MIT License. See `LICENSE` for more information.
