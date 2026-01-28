@@ -50,5 +50,60 @@ def full_chain():
     }
     return jsonify(response), 200
 
+
+@app.route('/corrupt', methods=['GET'])
+def corrupt():
+    if len(neuro_chain.chain) > 1:
+        # Change the data in the first mined block (index 1)
+        neuro_chain.chain[1]['transactions'][0]['author'] = "MALICIOUS_HACKER"
+        return jsonify({"message": "Block 1 has been tampered with!"}), 200
+    return "Not enough blocks to corrupt", 400
+
+# @app.route('/verify', methods=['POST'])
+# def verify_model():
+#     values = request.get_json()
+#     if 'file_data' not in values:
+#         return 'Missing file data', 400
+
+#     # Hash the provided file data to check against the ledger
+#     target_hash = hashlib.sha256(values['file_data'].encode()).hexdigest()
+    
+#     for block in neuro_chain.chain:
+#         for tx in block['transactions']:
+#             if tx['model_hash'] == target_hash:
+#                 return jsonify({
+#                     'status': 'Verified',
+#                     'message': 'Model IP found in ledger',
+#                     'details': tx
+#                 }), 200
+
+#     return jsonify({'status': 'Not Found', 'message': 'No matching model hash in registry'}), 404
+
+@app.route('/verify', methods=['POST'])
+def verify():
+    values = request.get_json()
+    if 'file_data' not in values:
+        return 'Missing file data', 400
+
+    # Hash the provided data to see if it matches anything in the chain
+    model_content = values['file_data'].encode()
+    target_hash = hashlib.sha256(model_content).hexdigest()
+
+    # Search through the entire blockchain
+    for block in neuro_chain.chain:
+        for transaction in block['transactions']:
+            if transaction['model_hash'] == target_hash:
+                return jsonify({
+                    'status': 'Verified',
+                    'message': 'This model is authentic and registered.',
+                    'details': transaction
+                }), 200
+
+    return jsonify({
+        'status': 'Not Found',
+        'message': 'This model hash does not exist in the registry.'
+    }), 404
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5600)

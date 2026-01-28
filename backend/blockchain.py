@@ -1,6 +1,20 @@
 import hashlib
 import json
 import time
+import requests
+
+
+# helper methods. To save the chain in JSON file
+def save_to_disk(self):
+    with open('blockchain_data.json', 'w') as f:
+        json.dump(self.chain, f, indent=4)
+
+def load_from_disk(self):
+    try:
+        with open('blockchain_data.json', 'r') as f:
+            self.chain = json.load(f)
+    except FileNotFoundError:
+        pass # Start with Genesis block if no file exists
 
 class Blockchain:
     def __init__(self):
@@ -50,3 +64,39 @@ class Blockchain:
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
+    
+    def is_chain_valid(self):
+        for i in range(1, len(self.chain)):
+            current_block = self.chain[i]
+            previous_block = self.chain[i - 1]
+
+            # 1. Check if the stored previous_hash matches the actual hash of the previous block
+            if current_block['previous_hash'] != self.hash(previous_block):
+                return False
+
+            # 2. Check if the Proof of Work is valid
+            if not self.valid_proof(previous_block['nonce'], current_block['nonce']):
+                return False
+                
+        return True
+    
+def resolve_conflicts(self):
+    neighbors = self.nodes # You would need a list of other node URLs
+    new_chain = None
+    max_length = len(self.chain)
+
+    for node in neighbors:
+        response = requests.get(f'http://{node}/chain')
+        if response.status_code == 200:
+            length = response.json()['length']
+            chain = response.json()['chain']
+
+            # Check if length is longer and chain is valid
+            if length > max_length and self.is_chain_valid(chain):
+                max_length = length
+                new_chain = chain
+
+    if new_chain:
+        self.chain = new_chain
+        return True
+    return False
