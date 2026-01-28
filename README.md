@@ -1,4 +1,3 @@
-
 NeuroChain 🧠⛓️
 
 ### **Decentralized AI Model Provenance & Integrity**
@@ -11,17 +10,17 @@ NeuroChain 🧠⛓️
 
 NeuroChain moves away from simulated ledgers to a real-world **DApp (Decentralized Application)** architecture.
 
-* **Smart Contract** : Written in Solidity, deployed via Hardhat. It handles model registry and collision prevention.
-* **Provider** : Ethers.js connects the browser to the Ethereum network.
-* **Signer** : MetaMask handles the private keys and transaction authorization.
-* **Integrity** : SHA-256 hashing ensures that even a single bit change in the AI model file results in a failed verification.
+- **Smart Contract** : Written in Solidity, deployed via Hardhat. It handles model registry and collision prevention.
+- **Provider** : Ethers.js connects the browser to the Ethereum network.
+- **Signer** : MetaMask handles the private keys and transaction authorization.
+- **Integrity** : SHA-256 hashing ensures that even a single bit change in the AI model file results in a failed verification.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| **Layer**        | **Technology**  |
-| ---------------------- | --------------------- |
+| **Layer**        | **Technology**        |
+| ---------------- | --------------------- |
 | **Blockchain**   | Solidity, Hardhat     |
 | **Frontend**     | React.js, TailwindCSS |
 | **Web3 Library** | Ethers.js (v6)        |
@@ -34,8 +33,8 @@ NeuroChain moves away from simulated ledgers to a real-world **DApp (Decentraliz
 
 ### 1. Prerequisites
 
-* [Node.js](https://nodejs.org/) (v18+)
-* [MetaMask Extension](https://metamask.io/) installed in your browser.
+- [Node.js](https://nodejs.org/) (v18+)
+- [MetaMask Extension](https://metamask.io/) installed in your browser.
 
 ### 2. Installation
 
@@ -105,6 +104,51 @@ function registerModel(string memory _name, string memory _author, string memory
 ```
 
 1. **Register a Model** : Upload an AI model file (e.g., `.onnx`, `.pth`). The frontend will compute the SHA-256 hash locally, and MetaMask will pop up to sign the transaction to write this data to the blockchain.
+
+---
+
+## 🐳 Docker Support (One Command)
+
+Run the entire application (Blockchain + Frontend) with a single command:
+
+```bash
+docker-compose up --build
+```
+
+### **What happens?**
+
+1. **Hardhat Node** starts on port `8545`.
+2. **Smart Contract** is automatically deployed.
+3. **Frontend** starts on port `5173`.
+4. **Contract Address** is automatically saved to `frontend/src/contract-address.json`.
+
+---
+
+## 🦊 How to Connect MetaMask
+
+### **1. Add Local Network**
+
+To interact with the local blockchain, add this custom network to MetaMask:
+
+- **Network Name**: `Hardhat Localhost`
+- **RPC URL**: `http://127.0.0.1:8545`
+- **Chain ID**: `31337`
+- **Currency Symbol**: `ETH`
+
+### **2. Get Test Wallet & Private Keys**
+
+Since the blockchain runs inside Docker, you need to grab the private keys from the container logs:
+
+1. List running containers:
+   ```bash
+   docker ps
+   ```
+2. View logs of the chain container (usually named `project-chain-1`):
+   ```bash
+   docker logs project-chain-1
+   ```
+3. Scroll up to find the **Account** and **Private Key** list (Account #0, #1, etc.).
+4. Copy a **Private Key** and import it into MetaMask (**Accounts** > **Add account** > **Import account**).
 
 ---
 

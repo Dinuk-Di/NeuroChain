@@ -16,6 +16,16 @@ async function main() {
   const address = await NeuroChain.getAddress();
 
   console.log(`NeuroChain deployed to ${address}`);
+
+  // Write address to frontend
+  const fs = require("fs");
+  const path = require("path");
+  const addressFile = path.join(__dirname, "../frontend/src/contract-address.json");
+  fs.writeFileSync(
+    addressFile,
+    JSON.stringify({ address: address }, null, 2)
+  );
+  console.log(`Address written to ${addressFile}`);
 }
 
 main().catch((error) => {

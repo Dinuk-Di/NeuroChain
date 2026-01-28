@@ -8,8 +8,6 @@ services:
     ports:
       - "8545:8545"
     command: ["sh", "chain-entrypoint.sh"]
-    environment:
-      - HARDHAT_NETWORK=localhost
 
   frontend:
     image: node:20
